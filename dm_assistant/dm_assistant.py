@@ -24,8 +24,7 @@ class State(rx.State):
 
 def index() -> rx.Component:
     # Welcome Page (Index)
-    return base_page(
-        
+    return base_page( 
         rx.vstack(
             rx.text(
                 "Dungeoon Master Assistant is an AI-powered tool designed to help Dungeon Masters create and manage their Dungeons & Dragons campaigns with ease.",

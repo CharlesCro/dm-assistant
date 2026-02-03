@@ -15,9 +15,18 @@ def base_page(child: rx.Component, hide_navbar = False, *args) -> rx.Component:
     )
 
 
-    return rx.container(
+    return rx.fragment(
             navbar(),
-            child,
+            rx.box(
+                child,
+                # bg=rx.color("accent", 3),
+                padding="1em",
+                text_align="center",
+                width="100%",
+                id='my-content-area'
+            ),
             rx.logo(),
-            rx.color_mode.button(position="bottom-right"),
+            rx.color_mode.button(position="bottom-right", id="color-mode-button"),
+            padding = '10em',
+            id = 'my-base-container'
     )

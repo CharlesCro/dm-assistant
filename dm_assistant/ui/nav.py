@@ -15,13 +15,13 @@ def navbar() -> rx.Component:
                         height="auto",
                         border_radius="25%",
                     ),
-                    rx.heading("Reflex", size="7", weight="bold"),
+                    rx.heading("DM Assistant", size="7", weight="bold"),
                     align_items="center",
                 ),
                 rx.hstack(
                     navbar_link("Home", "/#"),
                     navbar_link("About", "/#"),
-                    navbar_link("Pricing", "/#"),
+                    navbar_link("Files", "/#"),
                     navbar_link("Contact", "/#"),
                     spacing="5",
                 ),
@@ -33,6 +33,7 @@ def navbar() -> rx.Component:
                 ),
                 justify="between",
                 align_items="center",
+                id = 'my-navbar-hstack-desktop',
             ),
         ),
         rx.mobile_and_tablet(
@@ -41,7 +42,7 @@ def navbar() -> rx.Component:
                     rx.image(
                         src="/logo.jpg", width="2em", height="auto", border_radius="25%"
                     ),
-                    rx.heading("Reflex", size="6", weight="bold"),
+                    rx.heading("DM Assistant", size="6", weight="bold"),
                     align_items="center",
                 ),
                 rx.menu.root(
@@ -49,7 +50,7 @@ def navbar() -> rx.Component:
                     rx.menu.content(
                         rx.menu.item("Home"),
                         rx.menu.item("About"),
-                        rx.menu.item("Pricing"),
+                        rx.menu.item("Files"),
                         rx.menu.item("Contact"),
                         rx.menu.separator(),
                         rx.menu.item("Log in"),
