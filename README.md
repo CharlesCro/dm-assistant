@@ -3,7 +3,7 @@
 ## Licensing & Legal Attribution
 
 ### Software License
-This application is an open-source project licensed under the **[MIT License]** (or your chosen license). You are free to use, study, and modify the code, provided that the copyright notice and permission notice are included in all copies or substantial portions of the software.
+This application is an open-source project licensed under the **[MIT License]**. You are free to use, study, and modify the code, provided that the copyright notice and permission notice are included in all copies or substantial portions of the software.
 
 ---
 
