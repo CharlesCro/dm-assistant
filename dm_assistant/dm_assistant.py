@@ -9,12 +9,111 @@ class State(rx.State):
     """The app state."""
 
 
+    label = 'Traveler'
+
+    def handle_input_change(self, value: str):
+        """Handle the input change event."""
+        self.label = value
+
+    def did_click(self):
+        """Handle the click event."""
+        print(f"Button clicked! Current label: {self.label}")
+
+
+def base_page(child: rx.Component, hide_navbar = False, *args) -> rx.Component:
+
+    if not isinstance(child, rx.Component):
+        child = rx.heading('This is not a valid Reflex child component')
+
+    if hide_navbar:
+        return rx.container(
+            child,
+            rx.logo(),
+            rx.color_mode.button(position="bottom-right"),
+    )
+
+
+    return rx.container(
+        navbar(),
+            child,
+            rx.logo(),
+            rx.color_mode.button(position="bottom-right"),
+    )
+
+def navbar_link(text: str, url: str) -> rx.Component:
+    return rx.link(rx.text(text, size="4", weight="medium"), href=url)
+
+
+def navbar() -> rx.Component:
+    return rx.box(
+        rx.desktop_only(
+            rx.hstack(
+                rx.hstack(
+                    rx.image(
+                        src="/logo.jpg",
+                        width="2.25em",
+                        height="auto",
+                        border_radius="25%",
+                    ),
+                    rx.heading("Reflex", size="7", weight="bold"),
+                    align_items="center",
+                ),
+                rx.hstack(
+                    navbar_link("Home", "/#"),
+                    navbar_link("About", "/#"),
+                    navbar_link("Pricing", "/#"),
+                    navbar_link("Contact", "/#"),
+                    spacing="5",
+                ),
+                rx.hstack(
+                    rx.button("Sign Up", size="3", variant="outline"),
+                    rx.button("Log In", size="3"),
+                    spacing="4",
+                    justify="end",
+                ),
+                justify="between",
+                align_items="center",
+            ),
+        ),
+        rx.mobile_and_tablet(
+            rx.hstack(
+                rx.hstack(
+                    rx.image(
+                        src="/logo.jpg", width="2em", height="auto", border_radius="25%"
+                    ),
+                    rx.heading("Reflex", size="6", weight="bold"),
+                    align_items="center",
+                ),
+                rx.menu.root(
+                    rx.menu.trigger(rx.icon("menu", size=30)),
+                    rx.menu.content(
+                        rx.menu.item("Home"),
+                        rx.menu.item("About"),
+                        rx.menu.item("Pricing"),
+                        rx.menu.item("Contact"),
+                        rx.menu.separator(),
+                        rx.menu.item("Log in"),
+                        rx.menu.item("Sign up"),
+                    ),
+                    justify="end",
+                ),
+                justify="between",
+                align_items="center",
+            ),
+        ),
+        bg=rx.color("accent", 3),
+        padding="1em",
+        # position="fixed",
+        # top="0px",
+        # z_index="5",
+        width="100%",
+    )
+
 def index() -> rx.Component:
     # Welcome Page (Index)
-    return rx.container(
-        rx.color_mode.button(position="top-right"),
+    return base_page(
+        
         rx.vstack(
-            rx.heading("DM Assisant", size="9"),
             rx.text(
                 "Dungeoon Master Assistant is an AI-powered tool designed to help Dungeon Masters create and manage their Dungeons & Dragons campaigns with ease.",
                 size="5",
@@ -24,10 +123,16 @@ def index() -> rx.Component:
                 href="/docs/getting-started",
                 is_external=True,
             ),
+            rx.input(
+                default_value=State.label,
+                on_click=State.did_click(),
+                on_change = State.handle_input_change,
+                placeholder="Type your name here",
+            ),
             spacing="5",
             justify="center",
             min_height="85vh",
-        ),
+        )
     )
 
 
