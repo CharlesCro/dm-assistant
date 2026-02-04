@@ -6,47 +6,46 @@ from rxconfig import config
 
 from .ui.base import base_page
 
+from . import session_summary, contact, navigation, pages
+
 class State(rx.State):
     """The app state."""
-
-
-    label = 'Traveler'
-
-    def handle_input_change(self, value: str):
-        """Handle the input change event."""
-        self.label = value
-
-    def did_click(self):
-        """Handle the click event."""
-        print(f"Button clicked! Current label: {self.label}")
-
+    pass
 
 
 def index() -> rx.Component:
     # Welcome Page (Index)
-    return base_page( 
-        rx.vstack(
+    my_child = rx.vstack(
+            rx.heading("Welcome to Dungeon Master Assistant!", weight="bold"),
             rx.text(
                 "Dungeoon Master Assistant is an AI-powered tool designed to help Dungeon Masters create and manage their Dungeons & Dragons campaigns with ease.",
                 size="5",
             ),
             rx.link(
                 rx.button("Get Started", size="3", color_scheme="teal"),
-                href="/docs/getting-started",
+                href=navigation.routes.GETTING_STARTED_ROUTE,
                 is_external=True,
-            ),
-            rx.input(
-                default_value=State.label,
-                on_click=State.did_click(),
-                on_change = State.handle_input_change,
-                placeholder="Type your name here",
             ),
             spacing="5",
             justify="center",
+            align="center",
             min_height="85vh",
+            id='my-child'
         )
+    return base_page( 
+        my_child
     )
 
 
 app = rx.App()
-app.add_page(index)
+app.add_page(index, route=navigation.routes.HOME_ROUTE, title="Home")
+app.add_page(pages.about_page, route=navigation.routes.ABOUT_ROUTE, title="About")
+app.add_page(pages.files_page, route=navigation.routes.FILES_ROUTE, title="Files")
+app.add_page(session_summary.session_summary_list_page, route=navigation.routes.SESSION_SUMMARIES_ROUTE, title="Session Summaries", on_load=session_summary.SessionSummaryState.load_summaries)
+app.add_page(session_summary.session_summary_detail_page, route='/session-summaries/[session_id]', title="Session Summary Detail", on_load=session_summary.SessionSummaryState.get_summary_detail)
+app.add_page(session_summary.session_summary_add_page, route=navigation.routes.ADD_SESSION_SUMMARY_ROUTE, title="Add Session Summary")
+app.add_page(contact.contact_page, route=navigation.routes.CONTACT_ROUTE, title="Contact")
+app.add_page(contact.contact_entries_list_page, route=navigation.routes.CONTACT_ENTRIES_ROUTE, title="Contact Entries", on_load = contact.ContactState.list_entries)
+app.add_page(pages.getting_started_page, route=navigation.routes.GETTING_STARTED_ROUTE, title="Getting Started")
+app.add_page(pages.rules_page, route=navigation.routes.RULES_ROUTE, title="Rules")
+app.add_page(pages.chat_page, route=navigation.routes.CHAT_ROUTE, title="Chat")

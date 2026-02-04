@@ -19,9 +19,13 @@ def base_page(child: rx.Component, hide_navbar = False, *args) -> rx.Component:
             navbar(),
             rx.box(
                 child,
+                 rx.link(
+                rx.button("Rules", size="3", color_scheme="teal"),
+                href="/docs/rules",
+                is_external=True,
+            ),
                 # bg=rx.color("accent", 3),
                 padding="1em",
-                text_align="center",
                 width="100%",
                 id='my-content-area'
             ),

@@ -1,3 +1,6 @@
+alembic/
+alembic.ini
+
 .states
 .web
 assets/external/

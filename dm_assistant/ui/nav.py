@@ -1,5 +1,7 @@
 import reflex as rx
 
+from .. import navigation
+
 def navbar_link(text: str, url: str) -> rx.Component:
     return rx.link(rx.text(text, size="4", weight="medium"), href=url)
 
@@ -10,7 +12,7 @@ def navbar() -> rx.Component:
             rx.hstack(
                 rx.hstack(
                     rx.image(
-                        src="/logo_dnd.jpg",
+                        src="logo_dnd.jpg",
                         width="2.25em",
                         height="auto",
                         border_radius="25%",
@@ -19,10 +21,12 @@ def navbar() -> rx.Component:
                     align_items="center",
                 ),
                 rx.hstack(
-                    navbar_link("Home", "/#"),
-                    navbar_link("About", "/#"),
-                    navbar_link("Files", "/#"),
-                    navbar_link("Contact", "/#"),
+                    navbar_link("Home", navigation.routes.HOME_ROUTE),
+                    navbar_link("About", navigation.routes.ABOUT_ROUTE),
+                    navbar_link("Files", navigation.routes.FILES_ROUTE),
+                    navbar_link('Session Summaries', navigation.routes.SESSION_SUMMARIES_ROUTE),
+                    navbar_link("Contact", navigation.routes.CONTACT_ROUTE),
+                    navbar_link("Chat", navigation.routes.CHAT_ROUTE),
                     spacing="5",
                 ),
                 rx.hstack(
@@ -48,10 +52,11 @@ def navbar() -> rx.Component:
                 rx.menu.root(
                     rx.menu.trigger(rx.icon("menu", size=30)),
                     rx.menu.content(
-                        rx.menu.item("Home"),
-                        rx.menu.item("About"),
-                        rx.menu.item("Files"),
-                        rx.menu.item("Contact"),
+                        rx.menu.item("Home", on_click = navigation.NavState.to_home),
+                        rx.menu.item("About", on_click = navigation.NavState.to_about),
+                        rx.menu.item("Files", on_click = navigation.NavState.to_files),
+                        rx.menu.item("Contact", on_click = navigation.NavState.to_contact),
+                        rx.menu.item("Chat", on_click = navigation.NavState.to_chat),
                         rx.menu.separator(),
                         rx.menu.item("Log in"),
                         rx.menu.item("Sign up"),
