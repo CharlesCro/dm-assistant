@@ -1,38 +1,50 @@
 import reflex as rx
-
 from ..auth.state import SessionState
 from .nav import navbar
 from .dashboard import base_dashboard_page
-
-
+from ..styles import components, Spacing
 
 def base_layout_component(child: rx.Component, *args) -> rx.Component:
+    """The public-facing layout (Landing/Login/About) with a fantasy tome vibe."""
     return rx.fragment(
-            navbar(),
-            rx.box(
-                child,
-                 rx.link(
-                rx.button("Rules", size="3", color_scheme="teal"),
+        # 1. Top Navigation
+        navbar(),
+        
+        # 2. Main Content Container
+        rx.box(
+            child,
+            rx.link(
+                rx.button("Rules", size="3"),
                 href="/docs/rules",
                 is_external=True,
             ),
-                # bg=rx.color("accent", 3),
-                padding="1em",
-                width="100%",
-                id='my-content-area'
-            ),
-            rx.logo(),
-            rx.color_mode.button(position="bottom-right", id="color-mode-button"),
-            padding = '10em',
-            id = 'my-base-container'
+            # Styled via components.layout.CONTENT_AREA (Enterprise standard)
+            style=components.layout.CONTENT_AREA,
+            id='my-content-area'
+        ),
+        
+        # 3. Footer/Logo Branding
+        rx.logo(),
+        
+        # 4. Utilities
+        rx.color_mode.button(
+            position="bottom-right", 
+            id="color-mode-button",
+            color_scheme="gold"
+        ),
+        
+        # Root container style: Handles the aged paper background/texture globally
+        style=components.layout.BASE_LAYOUT_CONTAINER,
+        id='my-base-container'
     )
 
 def base_page(child: rx.Component, *args) -> rx.Component:
-
+    """
+    The High-Order Component (HOC) that determines if the user
+    sees the 'Scribe Dashboard' or the 'Public Ledger'.
+    """
     if not isinstance(child, rx.Component):
         child = rx.heading('This is not a valid Reflex child component')
-
-
 
     return rx.cond(
         SessionState.is_authenticated,

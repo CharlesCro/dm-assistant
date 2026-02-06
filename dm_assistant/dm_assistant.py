@@ -41,9 +41,14 @@ def index() -> rx.Component:
     return base_page( 
         my_child
     )
+import dm_assistant.styles as styles
 
-
-app = rx.App()
+app = rx.App(
+    
+    theme=styles.base_theme,
+    style=styles.BASE_STYLE,
+    stylesheets=styles.STYLESHEET,
+)
 app.add_page(
     my_login_page,
     route=reflex_local_auth.routes.LOGIN_ROUTE,
