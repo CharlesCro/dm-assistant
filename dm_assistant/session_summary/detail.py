@@ -5,15 +5,27 @@ from . import state
 
 def session_summary_detail_page() -> rx.Component:
     """Session Summary Detail Page."""
+    can_edit = True
+    edit_link = rx.link('Edit', href = f'{state.SessionSummaryState.session_summary_edit_url}') 
+
+    edit_link_element = rx.cond(
+        can_edit,
+        edit_link,
+        rx.fragment('')
+    )
     about_child = rx.vstack(
-        rx.heading(state.SessionSummaryState.summary.title, weight="bold"),
-        rx.text(state.SessionSummaryState.summary.summary_text, size="5"),
+        rx.hstack(
+            rx.heading(state.SessionSummaryState.summary.title, size='9', weight="bold"),
+            edit_link_element,
+            align='end'
+        ),
+        rx.text(
+            f"Published on: {state.SessionSummaryState.summary.publish_date}"
+        ),
+        rx.text(state.SessionSummaryState.summary.summary_text, white_space="pre-wrap"),
         spacing="5",
-        justify="center",
-        text_align="center",
         align="center",
         min_height="85vh",
-        id='about-child'
     )
     return base_page(
         about_child

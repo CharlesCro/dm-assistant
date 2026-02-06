@@ -1,11 +1,17 @@
 """Welcome to Reflex! This file outlines the steps to create a basic app."""
 
 import reflex as rx
+import reflex_local_auth
 
 from rxconfig import config
 
 from .ui.base import base_page
-
+from .auth.pages import (
+    my_login_page,
+    my_register_page,
+    my_logout_page
+)
+from .auth.state import SessionState
 from . import session_summary, contact, navigation, pages
 
 class State(rx.State):
@@ -38,12 +44,25 @@ def index() -> rx.Component:
 
 
 app = rx.App()
+app.add_page(
+    my_login_page,
+    route=reflex_local_auth.routes.LOGIN_ROUTE,
+    title="Login",
+)
+app.add_page(
+    my_register_page,
+    route=reflex_local_auth.routes.REGISTER_ROUTE,
+    title="Register",
+)
+app.add_page(my_logout_page, route = navigation.routes.LOGOUT_ROUTE, title = 'Logout')
 app.add_page(index, route=navigation.routes.HOME_ROUTE, title="Home")
 app.add_page(pages.about_page, route=navigation.routes.ABOUT_ROUTE, title="About")
 app.add_page(pages.files_page, route=navigation.routes.FILES_ROUTE, title="Files")
+app.add_page(pages.protected_page, route = '/protected', on_load = SessionState.on_load)
 app.add_page(session_summary.session_summary_list_page, route=navigation.routes.SESSION_SUMMARIES_ROUTE, title="Session Summaries", on_load=session_summary.SessionSummaryState.load_summaries)
 app.add_page(session_summary.session_summary_detail_page, route='/session-summaries/[session_id]', title="Session Summary Detail", on_load=session_summary.SessionSummaryState.get_summary_detail)
 app.add_page(session_summary.session_summary_add_page, route=navigation.routes.ADD_SESSION_SUMMARY_ROUTE, title="Add Session Summary")
+app.add_page(session_summary.session_summary_edit_page, route='/session-summaries/[session_id]/edit', title="Edit Session Summary", on_load=session_summary.SessionSummaryState.get_summary_detail)
 app.add_page(contact.contact_page, route=navigation.routes.CONTACT_ROUTE, title="Contact")
 app.add_page(contact.contact_entries_list_page, route=navigation.routes.CONTACT_ENTRIES_ROUTE, title="Contact Entries", on_load = contact.ContactState.list_entries)
 app.add_page(pages.getting_started_page, route=navigation.routes.GETTING_STARTED_ROUTE, title="Getting Started")

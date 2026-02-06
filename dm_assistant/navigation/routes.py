@@ -8,3 +8,4 @@ RULES_ROUTE = "/docs/rules"
 CHAT_ROUTE = "/chat"
 SESSION_SUMMARIES_ROUTE = "/session-summaries"
 ADD_SESSION_SUMMARY_ROUTE = "/session-summaries/add"
+LOGOUT_ROUTE = '/logout'

@@ -1,20 +1,12 @@
 import reflex as rx
 
+from ..auth.state import SessionState
 from .nav import navbar
-
-def base_page(child: rx.Component, hide_navbar = False, *args) -> rx.Component:
-
-    if not isinstance(child, rx.Component):
-        child = rx.heading('This is not a valid Reflex child component')
-
-    if hide_navbar:
-        return rx.container(
-            child,
-            rx.logo(),
-            rx.color_mode.button(position="bottom-right"),
-    )
+from .dashboard import base_dashboard_page
 
 
+
+def base_layout_component(child: rx.Component, *args) -> rx.Component:
     return rx.fragment(
             navbar(),
             rx.box(
@@ -33,4 +25,17 @@ def base_page(child: rx.Component, hide_navbar = False, *args) -> rx.Component:
             rx.color_mode.button(position="bottom-right", id="color-mode-button"),
             padding = '10em',
             id = 'my-base-container'
+    )
+
+def base_page(child: rx.Component, *args) -> rx.Component:
+
+    if not isinstance(child, rx.Component):
+        child = rx.heading('This is not a valid Reflex child component')
+
+
+
+    return rx.cond(
+        SessionState.is_authenticated,
+        base_dashboard_page(child, *args),
+        base_layout_component(child, *args)
     )

@@ -1,16 +1,16 @@
 import reflex as rx
 from datetime import datetime
-from sqlmodel import Field
+from sqlmodel import Field, Relationship
 import sqlalchemy as sa
+from reflex_local_auth import LocalUser
 
 from .. import utils
 
-class SessionSummaryModel(rx.Model, table = True):
+class UserInfo(rx.Model, table = True):
 
-    """Model for storing session summaries."""
-
-    title: str
-    summary_text: str 
+    email: str
+    user_id: int = Field(foreign_key='localuser.id')
+    user: LocalUser | None = Relationship()
     created_at: datetime = Field(
         default_factory=utils.timing.get_utc_now,
         sa_type=sa.DateTime(timezone=True),
@@ -22,12 +22,4 @@ class SessionSummaryModel(rx.Model, table = True):
         sa_type=sa.DateTime(timezone=True),
         sa_column_kwargs={'onupdate': sa.func.now(), "server_default": sa.func.now()},
         nullable=False,
-    )
-
-    publish_active: bool = False
-    publish_date: datetime = Field(
-        default = None,
-        sa_type=sa.DateTime(timezone=True),
-        sa_column_kwargs={},
-        nullable=True
     )
