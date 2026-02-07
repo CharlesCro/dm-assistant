@@ -13,7 +13,23 @@ PRIMARY_BUTTON = {
         "color": "white",
     },
 }
-
+AUTH_CARD_STYLE = {
+    "background_color": ThemeColors.BG_SURFACE,
+    "border": f"1px solid {ThemeColors.TEXT_MAIN}",
+    "padding": Spacing.XL,
+    "box_shadow": "0 0 20px rgba(0,0,0,0.1), inset 0 0 40px rgba(0,0,0,0.05)",
+    "position": "relative",
+    "_before": {
+        "content": '""',
+        "position": "absolute",
+        "top": "4px",
+        "left": "4px",
+        "right": "4px",
+        "bottom": "4px",
+        "border": f"1px solid {ThemeColors.TEXT_MUTED}",
+        "pointer_events": "none",
+    }
+}
 FLOATING_LINK_BUTTON = {
     **PRIMARY_BUTTON,
     "position": "fixed",

@@ -1,5 +1,5 @@
 import reflex as rx
-from ..auth.state import SessionState
+from ..auth.state import MyAuthState
 from .nav import navbar
 from .dashboard import base_dashboard_page
 from ..styles import components, Spacing
@@ -47,7 +47,7 @@ def base_page(child: rx.Component, *args) -> rx.Component:
         child = rx.heading('This is not a valid Reflex child component')
 
     return rx.cond(
-        SessionState.is_authenticated,
+        MyAuthState.user_name,
         base_dashboard_page(child, *args),
         base_layout_component(child, *args)
     )

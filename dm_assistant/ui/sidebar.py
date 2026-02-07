@@ -1,18 +1,67 @@
 import reflex as rx
-from ..auth.state import SessionState
+from ..auth.state import MyAuthState
 from .. import navigation
 # Import the design system
-from ..styles import ThemeColors, Spacing, components
+from ..styles import ThemeColors, Spacing, components, Typography
 from .dice_roller import dice_roller_panel
 
+def logout_confirmation_item() -> rx.Component:
+    """A sidebar item that triggers a fantasy-styled confirmation dialog."""
+    return rx.alert_dialog.root(
+        rx.alert_dialog.trigger(
+            # We use an hstack styled like a NAV_ITEM to match Settings perfectly
+            rx.hstack(
+                rx.icon("log-out", color=ThemeColors.DARK_INK),
+                rx.text("Leave Tavern", size="4"),
+                # Applying the exact same style spec as your other sidebar items
+                style=components.navigation.NAV_ITEM, 
+                width="100%",
+                align="center",
+                cursor="pointer",
+            )
+        ),
+        rx.alert_dialog.content(
+            rx.alert_dialog.title("Confirm Departure", font_family=Typography.HEADING_FONT),
+            rx.alert_dialog.description(
+                "Are you sure you wish to end your session? Any unsaved notes for your campaign may be lost to the void.",
+                size="2",
+                color=ThemeColors.TEXT_MUTED,
+            ),
+            rx.flex(
+                rx.alert_dialog.cancel(
+                    rx.button(
+                        "Stay", 
+                        variant="soft", 
+                        color_scheme="gray",
+                        cursor="pointer"
+                    ),
+                ),
+                rx.alert_dialog.action(
+                    rx.button(
+                        "Logout", 
+                        color_scheme="red", 
+                        variant="solid",
+                        on_click=MyAuthState.logout,
+                        cursor="pointer"
+                    ),
+                ),
+                spacing="3",
+                margin_top="16px",
+                justify="end",
+            ),
+            style={
+                "background_color": ThemeColors.BG_SURFACE,
+                "border": f"1px solid {ThemeColors.TEXT_MAIN}",
+                "box_shadow": "5px 5px 15px rgba(0,0,0,0.3)",
+            },
+        ),
+    )
 def sibebar_user_item() -> rx.Component:
-    auth_user_info = SessionState.authenticated_user_info
+    auth_user_name = rx.cond(MyAuthState.user_name, MyAuthState.user_name, 'Adventurer')
     # Corrected attribute access to match typical SessionState patterns
-    username = rx.cond(auth_user_info.user,
-                       auth_user_info.user.username, 'Adventurer')
 
     return rx.cond(
-        auth_user_info,
+        auth_user_name,
         rx.hstack(
             rx.icon_button(
                 rx.icon("user"), 
@@ -23,8 +72,8 @@ def sibebar_user_item() -> rx.Component:
             ),
             rx.vstack(
                 rx.box(
-                    rx.text(username, size="3", weight="bold", color=ThemeColors.TEXT_MAIN),
-                    rx.text(f"{auth_user_info.email}", size="1", color=ThemeColors.TEXT_MUTED),
+                    rx.text(auth_user_name, size="3", weight="bold", color=ThemeColors.TEXT_MAIN),
+                    rx.text(f"{MyAuthState.user_email}", size="1", color=ThemeColors.TEXT_MUTED),
                     width="100%",
                 ),
                 spacing="0",
@@ -108,7 +157,7 @@ def sidebar() -> rx.Component:
                 rx.vstack(
                     rx.vstack(
                         sidebar_item("Settings", "settings", "/#"),
-                        sidebar_logout_item(),
+                        logout_confirmation_item(),
                         spacing="1",
                         width="100%",
                     ),
