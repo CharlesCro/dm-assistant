@@ -10,7 +10,7 @@ class NavState(rx.State):
         return rx.redirect(reflex_local_auth.routes.REGISTER_ROUTE)
     
     def to_login(self):
-        return rx.redirect(reflex_local_auth.LOGIN_ROUTE)
+        return rx.redirect(reflex_local_auth.routes.LOGIN_ROUTE)
     
     def to_logout(self):
         return rx.redirect(routes.LOGOUT_ROUTE)

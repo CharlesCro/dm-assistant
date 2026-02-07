@@ -1,26 +1,25 @@
 import reflex as rx
 
 class ThemeColors:
-    # We reference CSS variables that we will define in globals.css
-    # This avoids the "rawColorMode" Javascript error entirely.
+    # Core aesthetic variables (mapped to globals.css)
+    BG_PAGE = "var(--bg-page)"        # Aged paper/parchment
+    BG_SURFACE = "var(--bg-surface)"  # Lighter paper for cards
+    BG_OVERLAY = "var(--bg-overlay)"  # Translucent ink wash
     
-    BG_PAGE = "var(--bg-page)"
-    BG_SURFACE = "var(--bg-surface)"
-    BG_OVERLAY = "var(--bg-overlay)"
+    TEXT_MAIN = "var(--text-main)"    # Deep charcoal/ink
+    TEXT_MUTED = "var(--text-muted)"  # Faded ink
     
-    TEXT_MAIN = "var(--text-main)"
-    TEXT_MUTED = "var(--text-muted)"
-
-    # These can stay as Radix colors as they handle themselves well
+    # Chat-specific colors
+    CHAT_USER_BUBBLE = "var(--bg-surface)"  # User as "written notes"
+    CHAT_AI_BUBBLE = "rgba(218, 165, 32, 0.1)" # AI as "magical/golden glow"
+    
     PRIMARY = rx.color("crimson", 12)
     PRIMARY_HOVER = rx.color("crimson", 4)
-    BORDER_SUBTLE = rx.color("sand", 10)
+    BORDER_SUBTLE = "1px solid var(--text-muted)"
     ANCIENT_GOLD = rx.color("gold", 9)
-
     # Aliases for compatibility
     DARK_INK = TEXT_MAIN
     FADED_INK = TEXT_MUTED
-    ANCIENT_GOLD = rx.color("gold", 9)
 
 class Spacing:
     ZERO = "0"

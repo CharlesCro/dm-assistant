@@ -12,7 +12,7 @@ from .auth.pages import (
     my_logout_page
 )
 from .auth.state import SessionState
-from . import session_summary, contact, navigation, pages
+from . import session_summary, contact, navigation, pages, chatbot
 
 class State(rx.State):
     """The app state."""
@@ -72,4 +72,4 @@ app.add_page(contact.contact_page, route=navigation.routes.CONTACT_ROUTE, title=
 app.add_page(contact.contact_entries_list_page, route=navigation.routes.CONTACT_ENTRIES_ROUTE, title="Contact Entries", on_load = contact.ContactState.list_entries)
 app.add_page(pages.getting_started_page, route=navigation.routes.GETTING_STARTED_ROUTE, title="Getting Started")
 app.add_page(pages.rules_page, route=navigation.routes.RULES_ROUTE, title="Rules")
-app.add_page(pages.chat_page, route=navigation.routes.CHAT_ROUTE, title="Chat")
+app.add_page(chatbot.chat_page, route=navigation.routes.CHAT_ROUTE, title="Chat")

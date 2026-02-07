@@ -40,6 +40,43 @@ def navbar() -> rx.Component:
                 align_items="center",
             ),
         ),
+         rx.mobile_and_tablet(
+            rx.hstack(
+                rx.hstack(
+                    rx.image(
+                        src="/logo_dnd.jpg",
+                        width="2em",
+                        height="auto",
+                        border_radius="25%",
+                    ),
+                    rx.heading(
+                        "DM Assistant", size="6", weight="bold"
+                    ),
+                    align_items="center",
+                ),
+                rx.menu.root(
+                    rx.menu.trigger(
+                        rx.icon("menu", size=30)
+                    ),
+                    rx.menu.content(
+                        rx.menu.item("Home", 
+                            on_click=navigation.NavState.to_home),
+                        rx.menu.item("About", 
+                            on_click=navigation.NavState.to_about),
+                        rx.menu.item("Contact", 
+                            on_click=navigation.NavState.to_contact),
+                        rx.menu.separator(),
+                        rx.menu.item("Log in", 
+                            on_click=navigation.NavState.to_login),
+                        rx.menu.item("Register", 
+                            on_click=navigation.NavState.to_register),
+                    ),
+                    justify="end",
+                ),
+                justify="between",
+                align_items="center",
+            ),
+        ),
         # Use semantic background token
         bg=ThemeColors.BG_SURFACE, 
         border_bottom=f"2px solid {ThemeColors.BORDER_SUBTLE}",
