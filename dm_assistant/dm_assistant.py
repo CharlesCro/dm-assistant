@@ -15,46 +15,7 @@ from reflex_google_auth import (
     GoogleAuthState,
     require_google_login,
 )
-class CharacterState(rx.State):
-    """State for the D&D character sheet."""
-    character_name: str = ""
-    char_class: str = ""
-    # Setting these as strings initially to handle input more gracefully
-    strength: str = "10"
-    dexterity: str = "10"
-    constitution: str = "10"
-    intelligence: str = "10"
-    wisdom: str = "10"
-    charisma: str = "10"
-    level: str = "1"
-    
-    @rx.var
-    def proficiency_bonus(self) -> str:
-        """Calculates proficiency based on level."""
-        try:
-            lvl = int(self.level)
-            bonus = ((lvl - 1) // 4) + 2
-            return f"+{bonus}"
-        except ValueError:
-            return "+2"
 
-def stat_box(label: str, value: str, setter: callable):
-    """Component for main ability scores."""
-    return rx.vstack(
-        rx.text(label, font_size="10px", font_weight="bold"),
-        rx.input(
-            value=value,
-            on_change=setter,
-            type_="number",
-            width="60px",
-            text_align="center",
-            variant="soft",
-        ),
-        border="2px solid #222",
-        border_radius="8px",
-        padding="4px",
-        align="center",
-    )
 @require_google_login()
 def index() -> rx.Component:
     
