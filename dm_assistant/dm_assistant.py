@@ -7,7 +7,7 @@ from rxconfig import config
 
 from .ui.base import base_page
 from .auth.state import GoogleState
-from . import  auth, session_summary, contact, navigation, pages, chatbot
+from . import  auth, session_summary, contact, navigation, pages, chatbot, character_sheet
 
 
 import reflex as rx
@@ -15,11 +15,49 @@ from reflex_google_auth import (
     GoogleAuthState,
     require_google_login,
 )
+class CharacterState(rx.State):
+    """State for the D&D character sheet."""
+    character_name: str = ""
+    char_class: str = ""
+    # Setting these as strings initially to handle input more gracefully
+    strength: str = "10"
+    dexterity: str = "10"
+    constitution: str = "10"
+    intelligence: str = "10"
+    wisdom: str = "10"
+    charisma: str = "10"
+    level: str = "1"
+    
+    @rx.var
+    def proficiency_bonus(self) -> str:
+        """Calculates proficiency based on level."""
+        try:
+            lvl = int(self.level)
+            bonus = ((lvl - 1) // 4) + 2
+            return f"+{bonus}"
+        except ValueError:
+            return "+2"
 
-
-
+def stat_box(label: str, value: str, setter: callable):
+    """Component for main ability scores."""
+    return rx.vstack(
+        rx.text(label, font_size="10px", font_weight="bold"),
+        rx.input(
+            value=value,
+            on_change=setter,
+            type_="number",
+            width="60px",
+            text_align="center",
+            variant="soft",
+        ),
+        border="2px solid #222",
+        border_radius="8px",
+        padding="4px",
+        align="center",
+    )
 @require_google_login()
 def index() -> rx.Component:
+    
       # Welcome Page (Index)
     my_child = rx.vstack(
             rx.heading("Welcome to Dungeon Master Assistant!", weight="bold"),
@@ -68,3 +106,8 @@ app.add_page(contact.contact_entries_list_page, route=navigation.routes.CONTACT_
 app.add_page(pages.getting_started_page, route=navigation.routes.GETTING_STARTED_ROUTE, title="Getting Started")
 app.add_page(pages.rules_page, route=navigation.routes.RULES_ROUTE, title="Rules")
 app.add_page(chatbot.chat_page, route=navigation.routes.CHAT_ROUTE, title="Chat")
+app.add_page(
+    character_sheet.character_sheet_content, 
+    route="/character",
+    title="Character Sheet | DM Assistant"
+)
