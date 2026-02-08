@@ -1,5 +1,6 @@
 import os
 import logging
+from ..auth.state import GoogleState
 from dotenv import load_dotenv
 load_dotenv() # Load environment variables from a .env file. This is crucial for keeping sensitive data like API keys out of your main codebase.
 # Suppress most ADK internal logs to keep the console clean during Streamlit runs.
@@ -7,7 +8,7 @@ load_dotenv() # Load environment variables from a .env file. This is crucial for
 logging.basicConfig(level=logging.ERROR) 
 MODEL_GEMINI = "gemini-2.0-flash" # Specifies the Google Gemini model to be used by the ADK agent.
 APP_NAME_FOR_ADK = "dm-assistant" # A unique name for your application within ADK, used for session management.
-USER_ID = "charlescro" # A default user ID. In a real application, this would be dynamic (e.g., from a login system).
+USER_ID = str(GoogleState.user_email) # A default user ID. In a real application, this would be dynamic (e.g., from a login system).
 # Defines the initial state for new ADK sessions. This provides default values for user information.
 INITIAL_STATE = {
     "user_name": None,

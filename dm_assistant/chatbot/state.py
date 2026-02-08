@@ -180,4 +180,5 @@ class ChatState(rx.State):
     def handle_key_down(self, key: str):
         """Handle Enter key to send message (Shift+Enter for new line)."""
         if key == "Enter":
+            self.current_input = ''
             return self.send_message()
