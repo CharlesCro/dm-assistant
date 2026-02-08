@@ -199,17 +199,27 @@ def require_google_login(
         def _auth_wrapper() -> rx.Component:
             return google_auth.google_oauth_provider(
                 rx.cond(
-                    rx.State.is_hydrated,
+                    rx.State.is_hydrated,  
                     rx.cond(
                         GoogleAuthState.token_is_valid,
                         page(),
                         base_layout_component(login_page()),
                     ),
+                    # Loading state while hydrating
+                    base_layout_component(
+                        rx.center(
+                            rx.vstack(
+                                rx.spinner(size="3", color_scheme="gold"),
+                                rx.text("Loading...", size="2"),
+                                spacing="4",
+                                align="center",
+                            ),
+                            min_height="85vh",
+                        )
+                    ),
                 ),
             )
-
         _auth_wrapper.__name__ = page.__name__
-
         return _auth_wrapper
 
     if page is None:

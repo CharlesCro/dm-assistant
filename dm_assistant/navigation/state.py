@@ -1,14 +1,10 @@
 import reflex as rx
-import reflex_local_auth
 
 from . import routes
 
 class NavState(rx.State):
     """The navigation state."""
 
-    def to_register(self):
-        return rx.redirect(reflex_local_auth.routes.REGISTER_ROUTE)
-    
     def to_login(self):
         return rx.redirect(routes.LOGIN_ROUTE)
     

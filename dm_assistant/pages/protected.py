@@ -1,9 +1,7 @@
 import reflex as rx
-import reflex_local_auth
 
 from ..ui.base import base_page
 
-@reflex_local_auth.require_login
 def protected_page() -> rx.Component:
     """About Page."""
     about_child = rx.vstack(

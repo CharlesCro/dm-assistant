@@ -1,5 +1,4 @@
 import reflex as rx
-import reflex_local_auth
 from .. import navigation
 from ..styles import ThemeColors, components # Import new styles
 
