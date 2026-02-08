@@ -1,5 +1,5 @@
 import reflex as rx
-from reflex_google_auth import (
+from ..my_google_auth import (
     GoogleAuthState,
     require_google_login,
 )
@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()  # reads variables from a .env file and sets them in os.environ
 
-from reflex_google_auth import google_login, google_oauth_provider
+from ..my_google_auth import google_login, google_oauth_provider
 
 
 

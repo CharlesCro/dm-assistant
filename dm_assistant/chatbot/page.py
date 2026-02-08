@@ -4,269 +4,165 @@ from ..styles import ThemeColors, Spacing, Typography
 from .state import ChatState, ChatMessage
 
 def message_bubble(message: ChatMessage) -> rx.Component:
-    """Render a single chat message bubble."""
+    """Render a single chat message bubble with 75% transparency."""
     is_user = message.role == "user"
     
+    # We define the transparent colors here. 
+    # rgba(..., 0.25) provides 75% transparency.
+    user_bg = "rgba(255, 248, 225, 0.25)" # Light parchment tint
+    ai_bg = "rgba(218, 165, 32, 0.25)"   # Golden tint
+    border_color = "rgba(0, 0, 0, 0.25)" # Faded ink border
+
     return rx.box(
         rx.hstack(
-            # Avatar (only for assistant)
             rx.cond(
                 ~is_user,
                 rx.avatar(
                     fallback="🎲",
-                    size="5",
+                    size="6",
                     radius="full",
                     color_scheme="gold",
+                    margin_top="10px",
                 ),
-                rx.box(),  # Empty spacer for user messages
             ),
             
-            # Message content
             rx.box(
                 rx.cond(
                     is_user,
-                    # User message - plain text
                     rx.text(
                         message.content,
                         color=ThemeColors.TEXT_MAIN,
-                        size="3",
+                        font_size="1.5rem",
+                        line_height="1.6",
                         white_space="pre-wrap",
                     ),
-                    # Assistant message - with markdown support
                     rx.markdown(
                         message.content,
                         color=ThemeColors.TEXT_MAIN,
+                        style={
+                            "font-size": "1.5rem",
+                            "line-height": "1.6",
+                        }
                     ),
                 ),
-                padding=Spacing.MD,
-                border_radius="8px",
-                max_width="600px",
-                bg=rx.cond(
-                    is_user,
-                    ThemeColors.CHAT_USER_BUBBLE,
-                    ThemeColors.CHAT_AI_BUBBLE,
-                ),
-                border=f"1px solid {ThemeColors.TEXT_MUTED}",
-                box_shadow="2px 2px 4px rgba(0,0,0,0.1)",
+                padding=Spacing.LG,
+                border_radius="12px",
+                max_width="75%",
+                # Apply 75% transparency to background and border
+                bg=rx.cond(is_user, user_bg, ai_bg),
+                border=f"1px solid {border_color}",
+                box_shadow="4px 4px 8px rgba(0,0,0,0.1)",
+                # Optional: Backdrop blur makes transparent bubbles look "frosted"
+                backdrop_filter="blur(4px)", 
             ),
             
-            spacing="3",
+            spacing="4",
             align="start",
             justify=rx.cond(is_user, "end", "start"),
             width="100%",
         ),
         width="100%",
-        padding_y=Spacing.SM,
+        padding_y=Spacing.MD,
     )
 
-def typing_indicator() -> rx.Component:
-    """Animated typing indicator when AI is processing."""
+def chat_header() -> rx.Component:
     return rx.hstack(
-        rx.avatar(
-            fallback="🎲",
-            size="5",
-            radius="full",
-            color_scheme="gold",
+        rx.vstack(
+            rx.heading("The Grand Ledger", size="9", font_family=Typography.HEADING_FONT),
+            rx.text("Archive of the Ancient Realms", size="2", color=ThemeColors.TEXT_MUTED),
+            spacing="1",
+            align="start",
         ),
-        rx.box(
-            rx.hstack(
-                rx.box(
-                    width="8px",
-                    height="8px",
-                    border_radius="50%",
-                    bg=ThemeColors.TEXT_MUTED,
-                    animation="pulse 1.5s ease-in-out infinite",
-                ),
-                rx.box(
-                    width="8px",
-                    height="8px",
-                    border_radius="50%",
-                    bg=ThemeColors.TEXT_MUTED,
-                    animation="pulse 1.5s ease-in-out 0.2s infinite",
-                ),
-                rx.box(
-                    width="8px",
-                    height="8px",
-                    border_radius="50%",
-                    bg=ThemeColors.TEXT_MUTED,
-                    animation="pulse 1.5s ease-in-out 0.4s infinite",
-                ),
-                spacing="2",
-                padding=Spacing.SM,
+        rx.spacer(),
+        rx.hstack(
+            rx.badge("Vertex AI RAG Active", color_scheme="gold", variant="outline", size="3"),
+            rx.button(
+                rx.icon("plus", size=24),
+                rx.text("New Scroll", size="4"),
+                on_click=ChatState.new_chat,
+                variant="soft",
+                color_scheme="gold",
+                size="3",
             ),
-            padding=Spacing.MD,
-            border_radius="8px",
-            bg=ThemeColors.CHAT_AI_BUBBLE,
-            border=f"1px solid {ThemeColors.TEXT_MUTED}",
+            spacing="4",
         ),
-        spacing="3",
-        align="start",
-        padding_y=Spacing.SM,
+        padding=Spacing.LG,
+        width="100%",
+        border_bottom=f"3px double {ThemeColors.TEXT_MAIN}",
+        bg=ThemeColors.BG_SURFACE,
     )
 
 def chat_input() -> rx.Component:
-    """Input area with send button - fixed rx.cond return types."""
     return rx.box(
         rx.hstack(
             rx.text_area(
                 id="chat_input_field",
                 value=ChatState.current_input,
                 on_change=ChatState.set_current_input,
-                placeholder="Whisper your query... (Enter to send, Shift+Enter for newline)",
-                resize="vertical",
-                min_height="80px",
-                max_height="200px",
-                width="100%",
-                disabled=ChatState.processing,
-                font_family=Typography.BODY_FONT,
+                placeholder="Type your command to the void...",
                 size="3",
-                border=f"2px solid {ThemeColors.TEXT_MUTED}",
-                border_radius="8px",
-                padding=Spacing.MD,
-                # FIXED: The third argument must be an Event, not a Component.
-                # We use rx.console_log as a safe "do-nothing" event for the browser.
-                on_key_down=lambda k, e: rx.cond(
-                    (k == "Enter") & (~e.shift_key),
-                    ChatState.send_message(),
-                    rx.console_log("Newline added"), 
-                ),
-                _focus={
-                    "border_color": ThemeColors.ANCIENT_GOLD,
-                    "box_shadow": f"0 0 0 2px {ThemeColors.ANCIENT_GOLD}",
-                    "outline": "none",
-                },
+                width="100%",
+                height="100px",
+                bg=ThemeColors.BG_PAGE,
+                border=f"2px solid {ThemeColors.TEXT_MAIN}",
+                font_size="1.2rem",
+                _focus={"border_color": ThemeColors.ANCIENT_GOLD},
             ),
-            
             rx.button(
-                rx.icon("send", size=24),
+                rx.icon("send", size=32),
+                "SEND",
                 on_click=ChatState.send_message,
                 disabled=ChatState.processing,
-                size="4",
+                height="100px",
+                width="150px",
                 color_scheme="gold",
-                cursor="pointer",
-                height="80px",
-                padding_x=Spacing.LG,
+                font_family=Typography.HEADING_FONT,
+                font_size="1.2rem",
             ),
-            
-            spacing="3",
-            align="end",
+            spacing="0",
             width="100%",
+            align="stretch",
         ),
-        padding=Spacing.LG,
-        border_top=f"2px solid {ThemeColors.TEXT_MAIN}",
+        padding=Spacing.MD,
         bg=ThemeColors.BG_SURFACE,
+        border_top=f"2px solid {ThemeColors.TEXT_MAIN}",
         width="100%",
     )
 
 def chat_page() -> rx.Component:
-    """Main chat page component."""
     return base_page(
         rx.vstack(
-            # Header
-            rx.box(
-                rx.hstack(
-                    rx.vstack(
-                        rx.heading(
-                            "The Grand Ledger",
-                            size="8",
-                            font_family=Typography.HEADING_FONT,
-                            color=ThemeColors.TEXT_MAIN,
-                        ),
-                        spacing="1",
-                        align="start",
-                    ),
-                    rx.spacer(),
-                    rx.button(
-                        rx.icon("plus", size=20),
-                        rx.text("New Chat", size="3", display=["none", "none", "block"]),
-                        on_click=ChatState.new_chat,
-                        variant="soft",
-                        color_scheme="gold",
-                        size="3",
-                        spacing="2",
-                    ),
-                    justify="between",
-                    align="center",
-                    width="100%",
-                ),
-                padding_y=Spacing.LG,
-                padding_x=Spacing.LG,
-                border_bottom=f"3px double {ThemeColors.TEXT_MAIN}",
-                bg=ThemeColors.BG_SURFACE,
-                width="100%",
-            ),
-            
-            # Messages area
+            chat_header(),
             rx.box(
                 rx.scroll_area(
-                    rx.box(
+                    # ... (messages)
+                    rx.vstack(
+                        rx.foreach(
+                            ChatState.messages,
+                            message_bubble,
+                        ),
                         rx.cond(
-                            ChatState.messages.length() == 0,
-                            rx.center(
-                                rx.vstack(
-                                    rx.text(
-                                        "🎲 Welcome to the Dungeon Master's Archive",
-                                        size="5",
-                                        weight="bold",
-                                        color=ThemeColors.TEXT_MAIN,
-                                        font_family=Typography.HEADING_FONT,
-                                    ),
-                                    rx.divider(width="200px", margin_y=Spacing.LG),
-                                    rx.text(
-                                        "Powered by Google ADK & Vertex AI RAG",
-                                        size="3",
-                                        color=ThemeColors.TEXT_MUTED,
-                                    ),
-                                    spacing="4",
-                                    text_align="center",
-                                ),
-                                min_height="500px",
-                                width="100%",
-                            ),
-                            rx.vstack(
-                                rx.foreach(
-                                    ChatState.messages,
-                                    message_bubble,
-                                ),
-                                rx.cond(
-                                    ChatState.processing,
-                                    typing_indicator(),
-                                    rx.box(),
-                                ),
-                                spacing="6",
-                                width="100%",
-                                padding=Spacing.LG,
+                            ChatState.processing,
+                            rx.box(
+                                rx.text("The spirits are thinking...", font_family=Typography.BODY_FONT, italic=True), 
+                                padding=Spacing.LG
                             ),
                         ),
                         width="100%",
-                        max_width="900px",
-                        margin="0 auto",
-                        id="chat-messages",
+                        padding_x="5%",
+                        padding_y=Spacing.XL,
+                        spacing="8",
                     ),
-                    height="100%",
-                    width="100%",
-                    type="auto",
-                    scrollbars="vertical",
-                    scroll_behavior='smooth'
+                    height="100%", 
                 ),
-                flex="1",
+                flex="1", # Takes up all available space between header and input
+                width="100%",
                 overflow="hidden",
                 bg=ThemeColors.BG_PAGE,
-                width="100%",
-                min_height="400px",
             ),
-            
-            # Input area
-            rx.box(
-                chat_input(),
-                width="100%",
-                max_width="900px",
-                margin="0 auto",
-            ),
-            
+            chat_input(),
+            height="100%", # Changed from 100vh
             width="100%",
-            height="calc(100vh - 100px)",
             spacing="0",
-            overflow="hidden",
         ),
     )

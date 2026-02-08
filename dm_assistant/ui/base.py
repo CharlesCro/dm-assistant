@@ -14,12 +14,12 @@ def base_layout_component(child: rx.Component, *args) -> rx.Component:
         # 2. Main Content Container
         rx.box(
             child,
-            rx.link(
-                rx.button("Rules", size="3"),
-                href="/docs/rules",
-                is_external=True,
+            # rx.link(
+            #     rx.button("Rules", size="3"),
+            #     href="/docs/rules",
+            #     is_external=True,
                 
-            ),
+            # ),
             # Styled via components.layout.CONTENT_AREA (Enterprise standard)
             style=components.layout.CONTENT_AREA,
             id='my-content-area'
@@ -27,11 +27,11 @@ def base_layout_component(child: rx.Component, *args) -> rx.Component:
     
         
         # 4. Utilities
-        rx.color_mode.button(
-            position="bottom-right", 
-            id="color-mode-button",
-            color_scheme="gold"
-        ),
+        # rx.color_mode.button(
+        #     position="bottom-right", 
+        #     id="color-mode-button",
+        #     color_scheme="gold"
+        # ),
         
         # Root container style: Handles the aged paper background/texture globally
         style=components.layout.BASE_LAYOUT_CONTAINER,

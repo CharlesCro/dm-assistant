@@ -1,5 +1,5 @@
 
-from reflex_google_auth import google_login, google_oauth_provider
+from ..my_google_auth import google_login, google_oauth_provider
 import reflex as rx
 from .state import GoogleState
 

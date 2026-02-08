@@ -6,22 +6,13 @@ import reflex as rx
 from rxconfig import config
 
 from .ui.base import base_page
-from .auth.state import GoogleState
 from . import  auth, session_summary, contact, navigation, pages, chatbot, character_sheet
 
 
 import reflex as rx
-from reflex_google_auth import (
-    GoogleAuthState,
+from .my_google_auth import (
     require_google_login,
 )
-
-from .services.adk_service import initialize_adk, run_adk_sync
-from .config.settings import MESSAGE_HISTORY_KEY, get_api_key
-
-# --- Initiate ADK ---
-# Assuming 'initialize_adk' and 'run_adk_sync' handle the core logic
-adk_runner, current_session_id = initialize_adk()
 
 @require_google_login()
 def index() -> rx.Component:

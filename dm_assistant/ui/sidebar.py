@@ -119,9 +119,9 @@ def sidebar_items() -> rx.Component:
     return rx.vstack(
         sidebar_item("Dashboard", "layout-dashboard", navigation.routes.HOME_ROUTE),
         sidebar_item("Chat", "message-circle", navigation.routes.CHAT_ROUTE),
-        sidebar_item("Files", "square-library", navigation.routes.SESSION_SUMMARIES_ROUTE),
-        sidebar_item("New Session", "plus", navigation.routes.ADD_SESSION_SUMMARY_ROUTE),
-        sidebar_item("Character", "user", "/character"),
+        # sidebar_item("Files", "square-library", navigation.routes.SESSION_SUMMARIES_ROUTE),
+        # sidebar_item("New Session", "plus", navigation.routes.ADD_SESSION_SUMMARY_ROUTE),
+        # sidebar_item("Character", "user", "/character"),
         spacing="1",
         width="100%",
     )
