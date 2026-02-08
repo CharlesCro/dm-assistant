@@ -23,9 +23,7 @@ def base_layout_component(child: rx.Component, *args) -> rx.Component:
             style=components.layout.CONTENT_AREA,
             id='my-content-area'
         ),
-        
-        # 3. Footer/Logo Branding
-        rx.logo(),
+    
         
         # 4. Utilities
         rx.color_mode.button(

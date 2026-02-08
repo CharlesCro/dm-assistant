@@ -61,12 +61,11 @@ def sibebar_user_item() -> rx.Component:
     return rx.cond(
         GoogleState.token_is_valid,
         rx.hstack(
-            rx.icon_button(
-                rx.icon("user"), 
-                size="3", 
-                radius="none", # Sharp corners for OSRS vibe
-                color_scheme="gold", # Maps to our Radix gold accent
-                variant="soft"
+                rx.avatar(
+                src=GoogleState.user_picture,
+                fallback=GoogleState.user_name[0], # Shows first letter if image fails
+                size="3",
+                radius="full",
             ),
             rx.vstack(
                 rx.box(

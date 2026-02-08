@@ -13,6 +13,11 @@ from reflex_google_auth import google_login, google_oauth_provider
 
 
 class GoogleState(GoogleAuthState):
+    @rx.var
+    def user_picture(self) -> str:
+        # 'picture' is the standard OIDC field for the Google profile image URL
+        return self.tokeninfo.get("picture", "")
+    
     @rx.var(cache=True)
     def protected_content(self) -> str:
         if self.token_is_valid:

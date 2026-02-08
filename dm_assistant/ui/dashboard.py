@@ -29,7 +29,6 @@ def base_dashboard_page(child: rx.Component, *args) -> rx.Component:
                     is_external=True,
                 ),
                 
-                rx.logo(),
                 
                 # Apply the centralized content area style spec
                 style=components.layout.CONTENT_AREA,

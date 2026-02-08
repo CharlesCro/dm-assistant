@@ -20,21 +20,10 @@ def navbar() -> rx.Component:
                     align_items="center",
                 ),
                 rx.hstack(
-                    # Links now inherit the Fantasy Typography automatically
-                    navbar_link("Home", navigation.routes.HOME_ROUTE),
+                    # Links now inherit the Fantasy Typography automatic
                     navbar_link("About", navigation.routes.ABOUT_ROUTE),
+                    navbar_link("Home", navigation.routes.HOME_ROUTE),
                     spacing="5",
-                ),
-                rx.hstack(
-                    rx.link(
-                        rx.button("Sign Up", variant="outline"),
-                        href=reflex_local_auth.routes.REGISTER_ROUTE,
-                    ),
-                    rx.link(
-                        rx.button("Log In"),
-                        href=reflex_local_auth.routes.LOGIN_ROUTE
-                    ),
-                    spacing="4",
                 ),
                 justify="between",
                 align_items="center",
@@ -66,10 +55,6 @@ def navbar() -> rx.Component:
                         rx.menu.item("Contact", 
                             on_click=navigation.NavState.to_contact),
                         rx.menu.separator(),
-                        rx.menu.item("Log in", 
-                            on_click=navigation.NavState.to_login),
-                        rx.menu.item("Register", 
-                            on_click=navigation.NavState.to_register),
                     ),
                     justify="end",
                 ),

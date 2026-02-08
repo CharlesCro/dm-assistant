@@ -18,8 +18,7 @@ from reflex_google_auth import (
 
 
 
-
-@require_google_login
+@require_google_login()
 def index() -> rx.Component:
       # Welcome Page (Index)
     my_child = rx.vstack(
