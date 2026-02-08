@@ -18,6 +18,7 @@ def base_layout_component(child: rx.Component, *args) -> rx.Component:
                 rx.button("Rules", size="3"),
                 href="/docs/rules",
                 is_external=True,
+                
             ),
             # Styled via components.layout.CONTENT_AREA (Enterprise standard)
             style=components.layout.CONTENT_AREA,
