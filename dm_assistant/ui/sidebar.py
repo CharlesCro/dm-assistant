@@ -1,9 +1,9 @@
 import reflex as rx
-from ..auth.state import MyAuthState
 from .. import navigation
 # Import the design system
 from ..styles import ThemeColors, Spacing, components, Typography
 from .dice_roller import dice_roller_panel
+from ..auth.state import GoogleState
 
 def logout_confirmation_item() -> rx.Component:
     """A sidebar item that triggers a fantasy-styled confirmation dialog."""
@@ -41,7 +41,7 @@ def logout_confirmation_item() -> rx.Component:
                         "Logout", 
                         color_scheme="red", 
                         variant="solid",
-                        on_click=MyAuthState.logout,
+                        on_click=GoogleState.logout,
                         cursor="pointer"
                     ),
                 ),
@@ -56,12 +56,10 @@ def logout_confirmation_item() -> rx.Component:
             },
         ),
     )
-def sibebar_user_item() -> rx.Component:
-    auth_user_name = rx.cond(MyAuthState.user_name, MyAuthState.user_name, 'Adventurer')
-    # Corrected attribute access to match typical SessionState patterns
 
+def sibebar_user_item() -> rx.Component:
     return rx.cond(
-        auth_user_name,
+        GoogleState.token_is_valid,
         rx.hstack(
             rx.icon_button(
                 rx.icon("user"), 
@@ -72,9 +70,8 @@ def sibebar_user_item() -> rx.Component:
             ),
             rx.vstack(
                 rx.box(
-                    rx.text(auth_user_name, size="3", weight="bold", color=ThemeColors.TEXT_MAIN),
-                    rx.text(f"{MyAuthState.user_email}", size="1", color=ThemeColors.TEXT_MUTED),
-                    width="100%",
+                    rx.text(GoogleState.user_name, size="3", weight="bold"),
+                    rx.text(GoogleState.user_email, size="1"),
                 ),
                 spacing="0",
                 align="start",
@@ -99,7 +96,7 @@ def sidebar_logout_item() -> rx.Component:
             width="100%",
             align="center",
         ),
-        on_click=navigation.NavState.to_logout,
+        on_click=navigation.NavState.do_logout,
         cursor="pointer",
         width="100%",
     )
@@ -157,10 +154,10 @@ def sidebar() -> rx.Component:
                 rx.vstack(
                     rx.vstack(
                         sidebar_item("Settings", "settings", "/#"),
-                        logout_confirmation_item(),
                         spacing="1",
                         width="100%",
                     ),
+                    logout_confirmation_item(),
                     rx.divider(border_color=ThemeColors.BORDER_SUBTLE),
                     sibebar_user_item(),
                     width="100%",

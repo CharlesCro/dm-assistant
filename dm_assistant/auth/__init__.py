@@ -1,5 +1,4 @@
+from .pages import login_page
+from .state import GoogleState
 
-from .models import UserInfo
-from .state import MyAuthState
-
-__all__ = ['UserInfo', 'MyAuthState']
+all = ['login_page', 'GoogleState']

@@ -1,29 +1,27 @@
 """Welcome to Reflex! This file outlines the steps to create a basic app."""
 
 import reflex as rx
-import reflex_local_auth
+
 
 from rxconfig import config
 
 from .ui.base import base_page
-from .auth.pages import (
-    my_login_page
+from .auth.state import GoogleState
+from . import  auth, session_summary, contact, navigation, pages, chatbot
+
+
+import reflex as rx
+from reflex_google_auth import (
+    GoogleAuthState,
+    require_google_login,
 )
-from .auth.state import MyAuthState
-from . import session_summary, contact, navigation, pages, chatbot
-
-from dotenv import load_dotenv
-
-load_dotenv()  # reads variables from a .env file and sets them in os.environ
 
 
-class State(rx.State):
-    """The app state."""
-    pass
 
 
+@require_google_login
 def index() -> rx.Component:
-    # Welcome Page (Index)
+      # Welcome Page (Index)
     my_child = rx.vstack(
             rx.heading("Welcome to Dungeon Master Assistant!", weight="bold"),
             rx.text(
@@ -41,9 +39,13 @@ def index() -> rx.Component:
             min_height="85vh",
             id='my-child'
         )
-    return base_page( 
+
+    return base_page(
         my_child
     )
+   
+  
+    
 import dm_assistant.styles as styles
 
 app = rx.App(
@@ -52,14 +54,10 @@ app = rx.App(
     style=styles.BASE_STYLE,
     stylesheets=styles.STYLESHEET,
 )
-app.add_page(
-    my_login_page,
-    route='/login',
-    title="Login",
-)
 
-# app.add_page(my_logout_page, route = navigation.routes.LOGOUT_ROUTE, title = 'Logout')
-app.add_page(index, route=navigation.routes.HOME_ROUTE, title="Home")
+
+app.add_page(index, route='/', title="Home")
+app.add_page(auth.login_page, route='/login', title='Login')
 app.add_page(pages.about_page, route=navigation.routes.ABOUT_ROUTE, title="About")
 app.add_page(pages.files_page, route=navigation.routes.FILES_ROUTE, title="Files")
 app.add_page(session_summary.session_summary_list_page, route=navigation.routes.SESSION_SUMMARIES_ROUTE, title="Session Summaries", on_load=session_summary.SessionSummaryState.load_summaries)

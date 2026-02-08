@@ -1,8 +1,9 @@
 import reflex as rx
-from ..auth.state import MyAuthState
 from .nav import navbar
 from .dashboard import base_dashboard_page
-from ..styles import components, Spacing
+from ..styles import components, ThemeColors, Typography, Spacing
+from ..auth.state import GoogleState
+
 
 def base_layout_component(child: rx.Component, *args) -> rx.Component:
     """The public-facing layout (Landing/Login/About) with a fantasy tome vibe."""
@@ -38,16 +39,12 @@ def base_layout_component(child: rx.Component, *args) -> rx.Component:
         id='my-base-container'
     )
 
-def base_page(child: rx.Component, *args) -> rx.Component:
-    """
-    The High-Order Component (HOC) that determines if the user
-    sees the 'Scribe Dashboard' or the 'Public Ledger'.
-    """
-    if not isinstance(child, rx.Component):
-        child = rx.heading('This is not a valid Reflex child component')
+# base.py excerpt
+def base_page(child: rx.Component,  *args) -> rx.Component:
 
+    
     return rx.cond(
-        MyAuthState.user_name,
-        base_dashboard_page(child, *args),
-        base_layout_component(child, *args)
+        GoogleState.token_is_valid,
+        base_dashboard_page(child, *args), # This has your Sidebar
+        base_layout_component(child, *args) # This has your Top Nav
     )
