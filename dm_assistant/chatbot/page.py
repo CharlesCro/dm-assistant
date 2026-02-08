@@ -14,7 +14,7 @@ def message_bubble(message: ChatMessage) -> rx.Component:
                 ~is_user,
                 rx.avatar(
                     fallback="🎲",
-                    size="3",
+                    size="5",
                     radius="full",
                     color_scheme="gold",
                 ),
@@ -64,7 +64,7 @@ def typing_indicator() -> rx.Component:
     return rx.hstack(
         rx.avatar(
             fallback="🎲",
-            size="3",
+            size="5",
             radius="full",
             color_scheme="gold",
         ),
@@ -105,13 +105,14 @@ def typing_indicator() -> rx.Component:
     )
 
 def chat_input() -> rx.Component:
-    """Input area with send button - now integrated with Google ADK."""
+    """Input area with send button - fixed rx.cond return types."""
     return rx.box(
         rx.hstack(
             rx.text_area(
+                id="chat_input_field",
                 value=ChatState.current_input,
                 on_change=ChatState.set_current_input,
-                placeholder="Whisper your query to the scroll... (Press Enter to send)",
+                placeholder="Whisper your query... (Enter to send, Shift+Enter for newline)",
                 resize="vertical",
                 min_height="80px",
                 max_height="200px",
@@ -122,7 +123,13 @@ def chat_input() -> rx.Component:
                 border=f"2px solid {ThemeColors.TEXT_MUTED}",
                 border_radius="8px",
                 padding=Spacing.MD,
-                on_key_down=lambda key: ChatState.handle_key_down(key),
+                # FIXED: The third argument must be an Event, not a Component.
+                # We use rx.console_log as a safe "do-nothing" event for the browser.
+                on_key_down=lambda k, e: rx.cond(
+                    (k == "Enter") & (~e.shift_key),
+                    ChatState.send_message(),
+                    rx.console_log("Newline added"), 
+                ),
                 _focus={
                     "border_color": ThemeColors.ANCIENT_GOLD,
                     "box_shadow": f"0 0 0 2px {ThemeColors.ANCIENT_GOLD}",
@@ -152,10 +159,10 @@ def chat_input() -> rx.Component:
     )
 
 def chat_page() -> rx.Component:
-    """Main chat page component - now powered by Google ADK."""
+    """Main chat page component."""
     return base_page(
         rx.vstack(
-            # Header with session info
+            # Header
             rx.box(
                 rx.hstack(
                     rx.vstack(
@@ -164,15 +171,6 @@ def chat_page() -> rx.Component:
                             size="8",
                             font_family=Typography.HEADING_FONT,
                             color=ThemeColors.TEXT_MAIN,
-                        ),
-                        rx.cond(
-                            ChatState.adk_session_id != "",
-                            rx.text(
-                                f"Session: {ChatState.adk_session_id[:12]}...",
-                                size="1",
-                                color=ThemeColors.TEXT_MUTED,
-                            ),
-                            rx.box(),
                         ),
                         spacing="1",
                         align="start",
@@ -198,11 +196,10 @@ def chat_page() -> rx.Component:
                 width="100%",
             ),
             
-            # Messages area with proper scrolling
+            # Messages area
             rx.box(
                 rx.scroll_area(
                     rx.box(
-                        # Welcome message (shown when empty)
                         rx.cond(
                             ChatState.messages.length() == 0,
                             rx.center(
@@ -220,41 +217,27 @@ def chat_page() -> rx.Component:
                                         size="3",
                                         color=ThemeColors.TEXT_MUTED,
                                     ),
-                                    rx.vstack(
-                                        rx.text("• Query campaign lore and rules", size="3"),
-                                        rx.text("• Generate NPCs and encounters", size="3"),
-                                        rx.text("• Access your RAG corpora", size="3"),
-                                        rx.text("• Search D&D 5e mechanics", size="3"),
-                                        spacing="2",
-                                        color=ThemeColors.TEXT_MUTED,
-                                    ),
                                     spacing="4",
                                     text_align="center",
                                 ),
                                 min_height="500px",
                                 width="100%",
                             ),
-                            # Messages list
                             rx.vstack(
-                                # Render all messages
                                 rx.foreach(
                                     ChatState.messages,
                                     message_bubble,
                                 ),
-                                
-                                # Typing indicator
                                 rx.cond(
                                     ChatState.processing,
                                     typing_indicator(),
                                     rx.box(),
                                 ),
-                                
                                 spacing="6",
                                 width="100%",
                                 padding=Spacing.LG,
                             ),
                         ),
-                        
                         width="100%",
                         max_width="900px",
                         margin="0 auto",
@@ -264,6 +247,7 @@ def chat_page() -> rx.Component:
                     width="100%",
                     type="auto",
                     scrollbars="vertical",
+                    scroll_behavior='smooth'
                 ),
                 flex="1",
                 overflow="hidden",

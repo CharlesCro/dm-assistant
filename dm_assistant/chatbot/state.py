@@ -98,65 +98,37 @@ class ChatState(rx.State):
         self.adk_session_id = ""
     
     async def send_message(self):
-        """Handle sending a message and getting AI response via Google ADK."""
+        """Handle sending a message and clearing UI."""
         if not self.current_input.strip():
             return
         
-        # Add user message
-        user_message = ChatMessage(
-            role="user",
-            content=self.current_input
-        )
-        self.messages.append(user_message)
-        
-        # Clear input and show processing
         query = self.current_input
         self.current_input = ""
+        
+        # Ensure the text area clears immediately in the browser
+        yield rx.set_value("chat_input_field", "")
+        
+        user_message = ChatMessage(role="user", content=query)
+        self.messages.append(user_message)
+        
         self.processing = True
         yield
         
         try:
-            # Ensure ADK session is ready
             await self._ensure_session_exists()
-            
-            # Run the ADK agent
             assistant_response = await self._run_adk_agent(query)
-            
-            # Add assistant message
-            assistant_message = ChatMessage(
-                role="assistant",
-                content=assistant_response
-            )
-            self.messages.append(assistant_message)
-            
+            self.messages.append(ChatMessage(role="assistant", content=assistant_response))
         except Exception as e:
-            # Handle errors gracefully
-            error_message = ChatMessage(
-                role="assistant",
-                content=f"I encountered an error: {str(e)}. Please try again."
-            )
-            self.messages.append(error_message)
-            print(f"ERROR in send_message: {str(e)}")
-        
+            self.messages.append(ChatMessage(role="assistant", content=f"Error: {str(e)}"))
         finally:
             self.processing = False
             yield
-    
     async def _run_adk_agent(self, user_message_text: str) -> str:
-        """
-        Run the Google ADK agent and return the response.
-        
-        Args:
-            user_message_text: The user's input message
-            
-        Returns:
-            The agent's response text
-        """
+        """Run the Google ADK agent and return the response."""
         global _adk_runner
         
         print(f"DEBUG: Running ADK agent with session ID: {self.adk_session_id}")
         
-        # Prepare the message in Gemini format
         content = genai_types.Content(
             role='user',
             parts=[genai_types.Part(text=user_message_text)]
@@ -164,7 +136,6 @@ class ChatState(rx.State):
         
         final_response_text = "[Agent encountered an issue]"
         
-        # Iterate through ADK events
         async for event in _adk_runner.run_async(
             user_id=self.USER_ID,
             session_id=self.adk_session_id,
@@ -176,9 +147,3 @@ class ChatState(rx.State):
                 break
         
         return final_response_text
-    
-    def handle_key_down(self, key: str):
-        """Handle Enter key to send message (Shift+Enter for new line)."""
-        if key == "Enter":
-            self.current_input = ''
-            return self.send_message()
