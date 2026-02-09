@@ -16,7 +16,7 @@ DASHBOARD_HSTACK = {
 }
 
 CONTENT_AREA = {
-    "padding": Spacing.LG,
+    # "padding": Spacing.LG,
     "flex": "1", # Grow to fill remaining space next to sidebar
     "height": "100vh", # Match the viewport
     "overflow_y": "auto", # Allow scrolling ONLY inside the content area

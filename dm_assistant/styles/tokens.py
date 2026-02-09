@@ -15,7 +15,7 @@ class ThemeColors:
     
     PRIMARY = rx.color("crimson", 12)
     PRIMARY_HOVER = rx.color("crimson", 4)
-    BORDER_SUBTLE = "1px solid var(--text-muted)"
+    BORDER_SUBTLE = "2px solid var(--text-muted)"
     ANCIENT_GOLD = rx.color("gold", 9)
     # Aliases for compatibility
     DARK_INK = TEXT_MAIN

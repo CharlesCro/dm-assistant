@@ -15,7 +15,7 @@ def navbar() -> rx.Component:
             rx.hstack(
                 rx.hstack(
                     rx.image(src="logo_dnd.jpg", width="2.25em"),
-                    rx.heading("DM Assistant", size="7"),
+                    rx.heading("Fable.ai", size="7"),
                     align_items="center",
                 ),
                 rx.hstack(

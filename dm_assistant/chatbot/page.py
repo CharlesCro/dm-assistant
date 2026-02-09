@@ -2,83 +2,99 @@ import reflex as rx
 from ..ui.base import base_page
 from ..styles import ThemeColors, Spacing, Typography
 from .state import ChatState, ChatMessage
+from ..auth.state import GoogleState
 
 def message_bubble(message: ChatMessage) -> rx.Component:
-    """Render a single chat message bubble with 75% transparency."""
+    """Render chat bubbles with conditional avatars for both AI and User."""
     is_user = message.role == "user"
     
-    # We define the transparent colors here. 
-    # rgba(..., 0.25) provides 75% transparency.
-    user_bg = "rgba(255, 248, 225, 0.25)" # Light parchment tint
-    ai_bg = "rgba(218, 165, 32, 0.25)"   # Golden tint
-    border_color = "rgba(0, 0, 0, 0.25)" # Faded ink border
+    # 75% transparency (0.25 alpha)
+    user_bg = "rgba(255, 248, 225, 0.25)" 
+    ai_bg = "rgba(218, 165, 32, 0.25)"   
 
     return rx.box(
-        rx.hstack(
+        rx.flex(
+            # --- AVATAR LOGIC ---
             rx.cond(
-                ~is_user,
+                is_user,
+                rx.avatar(
+                    src=GoogleState.user_picture,
+                    fallback=GoogleState.user_name[0],
+                    size="3",
+                    radius="full",
+                    margin_top="4px",
+                    color_scheme="indigo",
+                ),
                 rx.avatar(
                     fallback="🎲",
                     size="6",
                     radius="full",
                     color_scheme="gold",
-                    margin_top="10px",
+                    margin_top="4px",
+                    padding_y='2rem',
+                    padding_x='2rem'
                 ),
             ),
             
+            # --- MESSAGE BUBBLE ---
             rx.box(
                 rx.cond(
                     is_user,
                     rx.text(
                         message.content,
                         color=ThemeColors.TEXT_MAIN,
-                        font_size="1.5rem",
-                        line_height="1.6",
+                        font_size="1.2rem",
+                        line_height="1.4",
                         white_space="pre-wrap",
+                        text_align="left", # Keeps text inside bubble left-aligned
                     ),
                     rx.markdown(
                         message.content,
                         color=ThemeColors.TEXT_MAIN,
                         style={
-                            "font-size": "1.5rem",
-                            "line-height": "1.6",
+                            "font-size": "1.2rem",
+                            "line-height": "1.4",
                         }
                     ),
                 ),
-                padding=Spacing.LG,
-                border_radius="12px",
-                max_width="75%",
-                # Apply 75% transparency to background and border
-                bg=rx.cond(is_user, user_bg, ai_bg),
-                border=f"1px solid {border_color}",
-                box_shadow="4px 4px 8px rgba(0,0,0,0.1)",
-                # Optional: Backdrop blur makes transparent bubbles look "frosted"
-                backdrop_filter="blur(4px)", 
+                padding_x="1rem",
+                padding_y="0.75rem",
+                border_radius="15px",
+                max_width="80%",
+                width="fit-content",
+                # # Added dynamic background color for clarity
+                # bg=rx.cond(is_user, user_bg, ai_bg), 
             ),
             
-            spacing="4",
+            spacing="3",
             align="start",
-            justify=rx.cond(is_user, "end", "start"),
+            # FIXED: In 'row-reverse', "start" is the right side of the screen.
+            # We don't need a condition for 'justify' if we use 'row-reverse' correctly.
+            justify="start", 
+            flex_direction=rx.cond(is_user, "row-reverse", "row"),
             width="100%",
         ),
         width="100%",
-        padding_y=Spacing.MD,
+        padding_y=Spacing.SM,
+        # This ensures the entire flex container is pushed to the correct side
+        display="flex",
+        justify_content=rx.cond(is_user, "flex-end", "flex-start"),
     )
 
 def chat_header() -> rx.Component:
     return rx.hstack(
         rx.vstack(
-            rx.heading("The Grand Ledger", size="9", font_family=Typography.HEADING_FONT),
+            rx.heading("The Scribe", size="5", font_family=Typography.HEADING_FONT),
             rx.text("Archive of the Ancient Realms", size="2", color=ThemeColors.TEXT_MUTED),
             spacing="1",
-            align="start",
+            align="start", 
         ),
         rx.spacer(),
         rx.hstack(
-            rx.badge("Vertex AI RAG Active", color_scheme="gold", variant="outline", size="3"),
+            # rx.badge("Vertex AI RAG Active", color_scheme="gold", variant="outline", size="3"),
             rx.button(
                 rx.icon("plus", size=24),
-                rx.text("New Scroll", size="4"),
+                rx.text("New Chat", size="4"),
                 on_click=ChatState.new_chat,
                 variant="soft",
                 color_scheme="gold",
@@ -128,14 +144,13 @@ def chat_input() -> rx.Component:
         border_top=f"2px solid {ThemeColors.TEXT_MAIN}",
         width="100%",
     )
-
 def chat_page() -> rx.Component:
     return base_page(
         rx.vstack(
             chat_header(),
             rx.box(
-                rx.scroll_area(
-                    # ... (messages)
+                # Use rx.auto_scroll instead of rx.scroll_area
+                rx.auto_scroll(
                     rx.vstack(
                         rx.foreach(
                             ChatState.messages,
@@ -145,23 +160,26 @@ def chat_page() -> rx.Component:
                             ChatState.processing,
                             rx.box(
                                 rx.text("The spirits are thinking...", font_family=Typography.BODY_FONT, italic=True), 
-                                padding=Spacing.LG
+                                padding=Spacing.LG,
+                                id="processing-indicator" # Optional: good for manual scrolling
                             ),
                         ),
                         width="100%",
                         padding_x="5%",
                         padding_y=Spacing.XL,
                         spacing="8",
+                        align_items="stretch",
                     ),
-                    height="100%", 
+                    height="100%", # Ensure it fills the parent box
+                    width="100%",
                 ),
-                flex="1", # Takes up all available space between header and input
+                flex="1", 
                 width="100%",
                 overflow="hidden",
                 bg=ThemeColors.BG_PAGE,
             ),
             chat_input(),
-            height="100%", # Changed from 100vh
+            height="100%", 
             width="100%",
             spacing="0",
         ),

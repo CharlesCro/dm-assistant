@@ -1,6 +1,5 @@
 import reflex as rx
 from .. import navigation
-# Import the design system
 from ..styles import ThemeColors, Spacing, components, Typography
 from .dice_roller import dice_roller_panel
 from ..auth.state import GoogleState
@@ -9,16 +8,16 @@ def logout_confirmation_item() -> rx.Component:
     """A sidebar item that triggers a fantasy-styled confirmation dialog."""
     return rx.alert_dialog.root(
         rx.alert_dialog.trigger(
-            # We use an hstack styled like a NAV_ITEM to match Settings perfectly
-            rx.hstack(
-                rx.icon("log-out", color=ThemeColors.DARK_INK),
-                rx.text("Leave Tavern", size="4"),
-                # Applying the exact same style spec as your other sidebar items
-                style=components.navigation.NAV_ITEM, 
+            rx.box(
+                rx.hstack(
+                    rx.icon('log-out', color="inherit"),
+                    rx.text('Log Out', size="4"),
+                    width="100%",
+                    align="center",
+                ),
+                style=components.navigation.NAV_ITEM_LOGOUT,
                 width="100%",
-                align="center",
-                cursor="pointer",
-            )
+            ),
         ),
         rx.alert_dialog.content(
             rx.alert_dialog.title("Confirm Departure", font_family=Typography.HEADING_FONT),
@@ -29,21 +28,10 @@ def logout_confirmation_item() -> rx.Component:
             ),
             rx.flex(
                 rx.alert_dialog.cancel(
-                    rx.button(
-                        "Stay", 
-                        variant="soft", 
-                        color_scheme="gray",
-                        cursor="pointer"
-                    ),
+                    rx.button("Stay", variant="soft", color_scheme="gray", cursor="pointer"),
                 ),
                 rx.alert_dialog.action(
-                    rx.button(
-                        "Logout", 
-                        color_scheme="red", 
-                        variant="solid",
-                        on_click=GoogleState.logout,
-                        cursor="pointer"
-                    ),
+                    rx.button("Logout", color_scheme="red", variant="solid", on_click=GoogleState.logout, cursor="pointer"),
                 ),
                 spacing="3",
                 margin_top="16px",
@@ -57,71 +45,70 @@ def logout_confirmation_item() -> rx.Component:
         ),
     )
 
+def logout_item() -> rx.Component:
+    """Sidebar logout item behaving like a normal nav entry."""
+    return rx.hstack(
+        rx.icon("log-out", color="inherit"),
+        rx.text("Log Out", size="4"),
+        align="center",
+        width="100%",
+        style=components.navigation.NAV_ITEM_LOGOUT,
+        on_click=GoogleState.logout,
+    )
+
+
+
 def sibebar_user_item() -> rx.Component:
+    """Displays user profile info if logged in."""
     return rx.cond(
         GoogleState.token_is_valid,
         rx.hstack(
-                rx.avatar(
+            rx.avatar(
                 src=GoogleState.user_picture,
-                fallback=GoogleState.user_name[0], # Shows first letter if image fails
+                fallback=GoogleState.user_name[0],
                 size="3",
                 radius="full",
             ),
             rx.vstack(
                 rx.box(
                     rx.text(GoogleState.user_name, size="3", weight="bold"),
-                    rx.text(GoogleState.user_email, size="1"),
+                    rx.text(GoogleState.user_email, size="1", color=ThemeColors.TEXT_MUTED),
                 ),
                 spacing="0",
                 align="start",
-                justify="start",
-                width="100%",
             ),
-            padding_x=Spacing.XS,
+            padding_x=Spacing.SM,
+            padding_y=Spacing.XS,
             align="center",
-            justify="start",
             width="100%",
         ),
         rx.fragment('')
     )
 
-def sidebar_logout_item() -> rx.Component:
-    return rx.box(
-        rx.hstack(
-            rx.icon('log-out', color=ThemeColors.DARK_INK),
-            rx.text('Log Out', size="4"),
-            # Applying the navigation component style spec
-            style=components.navigation.NAV_ITEM, 
-            width="100%",
-            align="center",
-        ),
-        on_click=navigation.NavState.do_logout,
-        cursor="pointer",
-        width="100%",
-    )
-
-def sidebar_item(text: str, icon: str, href: str) -> rx.Component:
-    return rx.link(
-        rx.hstack(
-            rx.icon(icon, color=ThemeColors.DARK_INK),
-            rx.text(text, size="4"),
-            # Centralized hover and transition logic
-            style=components.navigation.NAV_ITEM, 
-            width="100%",
-            align="center",
-        ),
-        href=href,
-        underline="none",
-        width="100%",
-    )
-
 def sidebar_items() -> rx.Component:
     return rx.vstack(
-        sidebar_item("Dashboard", "layout-dashboard", navigation.routes.HOME_ROUTE),
-        sidebar_item("Chat", "message-circle", navigation.routes.CHAT_ROUTE),
-        # sidebar_item("Files", "square-library", navigation.routes.SESSION_SUMMARIES_ROUTE),
-        # sidebar_item("New Session", "plus", navigation.routes.ADD_SESSION_SUMMARY_ROUTE),
-        # sidebar_item("Character", "user", "/character"),
+        rx.link(
+            rx.hstack(
+                rx.icon('layout-dashboard', color="inherit"),
+                rx.text('Home', size="4"),
+                style=components.navigation.NAV_ITEM_HOME, 
+                align="center",
+            ),
+            href=navigation.routes.HOME_ROUTE,
+            underline="none",
+            width="100%",
+        ),
+        rx.link(
+            rx.hstack(
+                rx.icon('message-circle', color="inherit"),
+                rx.text('Chat', size="4"),
+                style=components.navigation.NAV_ITEM_CHAT, 
+                align="center",
+            ),
+            href=navigation.routes.CHAT_ROUTE,
+            underline="none",
+            width="100%",
+        ),
         spacing="1",
         width="100%",
     )
@@ -132,42 +119,43 @@ def sidebar() -> rx.Component:
             rx.vstack(
                 # Header Section
                 rx.hstack(
-                    rx.image(
-                        src="/logo_dnd.jpg",
-                        width="2.25em",
-                        height="auto",
-                        border=f"1px solid {ThemeColors.DARK_INK}", # Border around logo
-                    ),
-                    rx.heading("DM Assistant", size="7"),
+                    rx.image(src="/logo_dnd.jpg", width="2.25em", height="auto", border=f"1px solid {ThemeColors.DARK_INK}"),
+                    rx.heading("Fable.ai", size="8"),
                     align="center",
-                    justify="start",
                     padding_x=Spacing.XS,
+                    padding_y=Spacing.MD,
                     width="100%",
                 ),
+                rx.divider(),
                 sidebar_items(),
                 rx.spacer(),
                 
-                # The New Dice Roller!
                 dice_roller_panel(),
                 rx.spacer(),
+
                 # Footer Section
                 rx.vstack(
-                    rx.vstack(
-                        sidebar_item("Settings", "settings", "/#"),
-                        spacing="1",
+                    rx.link(
+                        rx.hstack(
+                            rx.icon('settings', color="inherit"),
+                            rx.text('Settings', size="4"),
+                            style=components.navigation.NAV_ITEM_SETTINGS, 
+                            align="center",
+                        ),
+                        href=navigation.routes.HOME_ROUTE, 
+                        underline="none",
                         width="100%",
                     ),
                     logout_confirmation_item(),
                     rx.divider(border_color=ThemeColors.BORDER_SUBTLE),
                     sibebar_user_item(),
                     width="100%",
-                    spacing="5",
+                    spacing="4",
                 ),
-                # Applying the master Sidebar Container spec (Handles Parchment BG & Borders)
-                
                 style=components.navigation.SIDEBAR_CONTAINER,
             ),
         ),
+        # Mobile Tablet View
         rx.mobile_and_tablet(
             rx.drawer.root(
                 rx.drawer.trigger(rx.icon("align-justify", size=30, color=ThemeColors.TEXT_MAIN)),
@@ -175,10 +163,7 @@ def sidebar() -> rx.Component:
                 rx.drawer.portal(
                     rx.drawer.content(
                         rx.vstack(
-                            rx.box(
-                                rx.drawer.close(rx.icon("x", size=30, color=ThemeColors.PRIMARY)),
-                                width="100%",
-                            ),
+                            rx.box(rx.drawer.close(rx.icon("x", size=30, color=ThemeColors.PRIMARY)), width="100%"),
                             sidebar_items(),
                             rx.spacer(),
                             rx.divider(border_color=ThemeColors.BORDER_SUBTLE),
@@ -186,7 +171,6 @@ def sidebar() -> rx.Component:
                             spacing="5",
                             width="100%",
                         ),
-                        # Use the same surface color for the mobile drawer
                         bg=ThemeColors.BG_SURFACE,
                         padding=Spacing.LG,
                         height="100%",
@@ -197,5 +181,4 @@ def sidebar() -> rx.Component:
             ),
             padding=Spacing.MD,
         ),
-        
     )

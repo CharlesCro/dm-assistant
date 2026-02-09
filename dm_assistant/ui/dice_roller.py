@@ -70,7 +70,7 @@ def dice_roller_panel() -> rx.Component:
         text_align='center',
         padding=Spacing.MD,
         box_shadow = "3px 3px 0px rgba(0,0,0,0.3)",
-        border=f"2px solid {ThemeColors.BORDER_SUBTLE}",
+        border=ThemeColors.BORDER_SUBTLE,
         bg=ThemeColors.BG_PAGE,
         width="15rem"
     )
