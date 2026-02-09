@@ -70,3 +70,12 @@ app.add_page(
     route="/character",
     title="Character Sheet | DM Assistant"
 )
+def debug_env():
+    import os
+    return rx.vstack(
+        rx.text(f"CLIENT_ID set: {bool(os.getenv('GOOGLE_CLIENT_ID'))}"),
+        rx.text(f"CLIENT_SECRET set: {bool(os.getenv('GOOGLE_CLIENT_SECRET'))}"),
+        rx.text(f"REDIRECT_URI: {os.getenv('GOOGLE_REDIRECT_URI', 'NOT SET')}"),
+    )
+
+app.add_page(debug_env, route='/debug-env')

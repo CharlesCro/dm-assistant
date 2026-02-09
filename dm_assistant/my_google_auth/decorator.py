@@ -210,7 +210,7 @@ def require_google_login(
                         rx.center(
                             rx.vstack(
                                 rx.spinner(size="3", color_scheme="gold"),
-                                rx.text("Loading...", size="2"),
+                                rx.text("Initializing...", size="2"),
                                 spacing="4",
                                 align="center",
                             ),
@@ -219,6 +219,7 @@ def require_google_login(
                     ),
                 ),
             )
+        
         _auth_wrapper.__name__ = page.__name__
         return _auth_wrapper
 

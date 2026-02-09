@@ -63,16 +63,39 @@ class GoogleAuthState(rx.State):
     @rx.var(cache=True)
     def tokeninfo(self) -> dict[str, Any]:
         try:
+            if not self.id_token_json:
+                return {}
+            
+            token_data = json.loads(self.id_token_json)
+            if "credential" not in token_data:
+                print("No credential found in token data")
+                return {}
+                
             return verify_oauth2_token(
-                json.loads(self.id_token_json)["credential"],
+                token_data["credential"],
                 requests.Request(),
                 self.client_id,
             )
+        except json.JSONDecodeError as e:
+            print(f"JSON decode error: {e}")
+            self.id_token_json = ""
+            return {}
+        except ValueError as e:
+            print(f"Token verification error: {e}")
+            self.id_token_json = ""
+            return {}
         except Exception as exc:
+            print(f"Unexpected error verifying token: {exc!r}")
             if self.id_token_json:
-                print(f"Error verifying token: {exc!r}")  # noqa: T201
                 self.id_token_json = ""
-        return {}
+            return {}
+
+    @rx.var(cache=True)
+    def client_id(self) -> str:
+        client_id = CLIENT_ID or os.environ.get("GOOGLE_CLIENT_ID", "")
+        if not client_id:
+            print("WARNING: GOOGLE_CLIENT_ID not set!")
+        return client_id
 
     @rx.event
     def logout(self):
