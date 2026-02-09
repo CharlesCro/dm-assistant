@@ -40,30 +40,30 @@ class GoogleLogin(rx.Component):
 
 
 google_login = GoogleLogin.create
-
-
 def handle_google_login(
     on_success: EventType[dict] = GoogleAuthState.on_success,
 ) -> rx.Var[rx.EventChain]:
     on_success_event_chain = rx.Var.create(
         rx.EventChain.create(
-            value=on_success,  # type: ignore
+            value=on_success,
             args_spec=_on_success_signature,
             key="on_success",
         )
     )
     return rx.Var(
-        "() => login()",
+        "login",
         _var_type=rx.EventChain,
         _var_data=rx.vars.VarData(
             hooks={
                 """
-const login = useGoogleLogin({
-  onSuccess: %s,
-  flow: 'auth-code',
-});"""
-                % on_success_event_chain: on_success_event_chain._get_all_var_data(),
-            },
-            imports={LIBRARY: "useGoogleLogin"},
-        ),
-    )
+                    const login = useGoogleLogin({
+                    onSuccess: %s,
+                    flow: 'auth-code',
+                    ux_mode: 'redirect',
+                    // Use a ternary check to prevent crashing during Reflex Prerendering
+                    redirect_uri: (typeof window !== 'undefined') ? window.location.origin + '/login' : '',
+                    });""" % on_success_event_chain: on_success_event_chain._get_all_var_data(),
+                                },
+                                imports={LIBRARY: [rx.utils.imports.ImportVar(tag="useGoogleLogin")]},
+                            ),
+                        )

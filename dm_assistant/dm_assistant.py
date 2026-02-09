@@ -1,56 +1,71 @@
-"""Welcome to Reflex! This file outlines the steps to create a basic app."""
-
 import reflex as rx
-
-
 from rxconfig import config
-
 from .ui.base import base_page
-from . import  auth, session_summary, contact, navigation, pages, chatbot, character_sheet
+from . import auth, session_summary, contact, navigation, pages, chatbot, character_sheet
+import dm_assistant.styles as styles
+from .auth.state import GoogleState
 
 
-import reflex as rx
-from .my_google_auth import (
-    require_google_login,
-)
-
-@require_google_login()
+# 1. Removed the @require_google_login() decorator to make this page public
 def index() -> rx.Component:
     
-      # Welcome Page (Index)
+    # Welcome Page (Index)
     my_child = rx.vstack(
-            rx.heading("Welcome to Dungeon Master Assistant!", weight="bold"),
-            rx.text(
-                "Dungeoon Master Assistant is an AI-powered tool designed to help Dungeon Masters create and manage their Dungeons & Dragons campaigns with ease.",
-                size="5",
+        rx.heading("Welcome to Dungeon Master Assistant!", weight="bold"),
+        rx.text(
+            "Dungeon Master Assistant is an AI-powered tool designed to help Dungeon Masters create and manage their Dungeons & Dragons campaigns with ease.",
+            size="5",
+        ),
+        rx.hstack(
+            rx.cond(
+                GoogleState.token_is_valid,
+                rx.text(f'Welcome {GoogleState.user_name}'),
+                rx.link(
+                rx.button(
+                    "Login with Google", 
+                    size="3", 
+                    variant="outline",
+                    color_scheme="blue",
+                    cursor="pointer"
+                ),
+                href="/login",
             ),
-            rx.link(
-                rx.button("Get Started", size="3", color_scheme="teal"),
-                href=navigation.routes.GETTING_STARTED_ROUTE,
-                is_external=True,
             ),
-            spacing="5",
-            justify="center",
-            align="center",
-            min_height="85vh",
-            id='my-child'
-        )
+            
+            spacing="4",
+        ),
+        spacing="5",
+        justify="center",
+        align="center",
+        min_height="85vh",
+        id='my-child'
+    )
 
     return base_page(
         my_child
     )
-   
-  
-    
-import dm_assistant.styles as styles
+from starlette.middleware.base import BaseHTTPMiddleware
+
+# 1. Define a middleware class to set the COOP header
+class COOPMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+        # This header allows Google's popup to communicate with your app
+        response.headers["Cross-Origin-Opener-Policy"] = "same-origin-allow-popups"
+        return response
+
+# 2. Define the transformer function
+def apply_backend_middleware(api_app):
+    api_app.add_middleware(COOPMiddleware)
+    return api_app
+
 
 app = rx.App(
-    
     theme=styles.base_theme,
     style=styles.BASE_STYLE,
     stylesheets=styles.STYLESHEET,
+    api_transformer=apply_backend_middleware
 )
-
 
 app.add_page(index, route='/', title="Home")
 app.add_page(auth.login_page, route='/login', title='Login')
@@ -70,6 +85,7 @@ app.add_page(
     route="/character",
     title="Character Sheet | DM Assistant"
 )
+
 def debug_env():
     import os
     return rx.vstack(

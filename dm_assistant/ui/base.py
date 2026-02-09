@@ -14,6 +14,8 @@ def base_layout_component(child: rx.Component, *args) -> rx.Component:
         # 2. Main Content Container
         rx.box(
             child,
+            # The new Login Button
+            
             # rx.link(
             #     rx.button("Rules", size="3"),
             #     href="/docs/rules",
@@ -24,7 +26,7 @@ def base_layout_component(child: rx.Component, *args) -> rx.Component:
             style=components.layout.CONTENT_AREA,
             id='my-content-area'
         ),
-    
+
         
         # 4. Utilities
         # rx.color_mode.button(

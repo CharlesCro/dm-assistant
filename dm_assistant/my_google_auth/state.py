@@ -54,7 +54,12 @@ class GoogleAuthState(rx.State):
         if "code" in id_token:
             # Handle auth-code flow
             id_token["credential"] = await get_id_token(id_token["code"])
+        
+        # Store the token
         self.id_token_json = json.dumps(id_token)
+        
+        # Reroute to the home page after successful login
+        return rx.redirect("/")
 
     @rx.var(cache=True)
     def client_id(self) -> str:

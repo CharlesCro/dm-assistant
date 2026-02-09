@@ -72,5 +72,6 @@ def dice_roller_panel() -> rx.Component:
         box_shadow = "3px 3px 0px rgba(0,0,0,0.3)",
         border=ThemeColors.BORDER_SUBTLE,
         bg=ThemeColors.BG_PAGE,
-        width="15rem"
+        width="15rem",
+        padding_x='2rem'
     )
